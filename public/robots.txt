@@ -1,0 +1,11 @@
+# Generated robots.txt for SEO
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /application/
+Disallow: /system/
+
+# Specify sitemap location
+Sitemap: https://colegal.id/sitemap.xml
