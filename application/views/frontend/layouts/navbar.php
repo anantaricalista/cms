@@ -135,8 +135,8 @@ if (!function_exists('renderMobileMenu')) {
 
                     <button class="boc d-flex align-items-center justify-content-center" id="thbtn"
                         style="width:38px;height:38px;padding:0;border-radius:12px;" aria-label="Toggle Theme">
-                        <i class="fa-solid fa-sun" id="suni" style="display:none"></i>
-                        <i class="fa-solid fa-moon" id="mooni"></i>
+                        <i class="fa-solid fa-sun" id="suni"></i>
+                        <i class="fa-solid fa-moon" id="mooni" style="display:none"></i>
                     </button>
 
                     <a href="#contact" class="bgrd btn px-3 py-2 d-none d-sm-flex align-items-center gap-2">
