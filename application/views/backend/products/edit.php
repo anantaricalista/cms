@@ -16,7 +16,7 @@
                 enctype="multipart/form-data">
 
                 <?php $this->load->view('backend/products/_form', [
-                    'service' => $product
+                    'product' => $product
                 ]); ?>
 
                 <div class="card">

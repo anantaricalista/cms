@@ -15,7 +15,7 @@
             <form action="<?= site_url('admin/products/store'); ?>" method="post" enctype="multipart/form-data">
 
                 <?php $this->load->view('backend/products/_form', [
-                    'service' => []
+                    'product' => []
                 ]); ?>
 
                 <div class="card">

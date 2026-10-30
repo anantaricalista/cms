@@ -29,7 +29,7 @@ class Products extends MY_Controller
             'site' => $this->Site_model->get()
         ];
 
-        $this->render('backend/Products/index', $data);
+        $this->render('backend/products/index', $data);
     }
 
     public function create()
@@ -43,14 +43,14 @@ class Products extends MY_Controller
                 <a href="' . site_url('admin/dashboard') . '">Dashboard</a>
             </li>
             <li class="breadcrumb-item">
-                <a href="' . site_url('admin/Products') . '">Products</a>
+                <a href="' . site_url('admin/products') . '">Products</a>
             </li>
             <li class="breadcrumb-item active">Create Products</li>
         </ol>',
             'site' => $this->Site_model->get()
         ];
 
-        $this->render('backend/Products/create', $data);
+        $this->render('backend/products/create', $data);
     }
     public function store()
     {
@@ -138,7 +138,7 @@ class Products extends MY_Controller
                 <a href="' . site_url('admin/dashboard') . '">Dashboard</a>
             </li>
             <li class="breadcrumb-item">
-                <a href="' . site_url('admin/Products') . '">Products</a>
+                <a href="' . site_url('admin/products') . '">Products</a>
             </li>
             <li class="breadcrumb-item active">Edit Products</li>
         </ol>',
