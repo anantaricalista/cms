@@ -51,6 +51,16 @@ $favicon = !empty($site['favicon_media_id'])
 
 <head>
 
+    <script>
+        (function () {
+            var t = null;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (t !== 'dark') {
+                document.documentElement.classList.add('lm');
+            }
+        })();
+    </script>
+
     <meta charset="utf-8">
 
     <meta http-equiv="X-UA-Compatible"

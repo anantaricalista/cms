@@ -1,5 +1,5 @@
 /*  STATE  */
-let isDark = true,
+let isDark = document.getElementById('htmlRoot').classList.contains('lm') === false,
     currentUser = null;
 let chatHistory = [];
 
@@ -24,6 +24,7 @@ function toggleTheme() {
     // Sync settings toggle
     const dmtog = document.getElementById('darkModeToggle');
     if (dmtog) dmtog.checked = isDark;
+    try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) { }
     // Update charts
     updateChartColors();
 }
