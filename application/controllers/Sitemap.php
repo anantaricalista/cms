@@ -13,6 +13,9 @@ class Sitemap extends CI_Controller
         $this->load->model('News_model');
         $this->load->model('Team_model');
         $this->load->model('Testimonial_model');
+        $this->load->model('Client_model');
+        $this->load->model('Career_model');
+        $this->load->model('Download_model');
     }
 
     /**
@@ -23,135 +26,63 @@ class Sitemap extends CI_Controller
         header('Content-Type: application/xml; charset=UTF-8');
         header('Cache-Control: public, max-age=86400'); // Cache 24 jam
 
-        $base_url = base_url();
-        $sitemap_urls = [];
+        $urls = [];
 
-        // Home page
-        $sitemap_urls[] = [
-            'url' => $base_url,
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'weekly',
-            'priority' => '1.0'
+        $urls[] = $this->entry(base_url(), date('Y-m-d'), 'weekly', '1.0');
+
+        // Halaman daftar (listing) yang tersedia di frontend
+        $listings = [
+            ['service',     $this->Service_model->get_published(), 'weekly',  '0.8'],
+            ['product',     $this->Product_model->get_published(), 'weekly',  '0.8'],
+            ['portfolio',   $this->Portfolio_model->get_published(), 'weekly', '0.8'],
+            ['news',        $this->News_model->get_published(), 'weekly',  '0.8'],
+            ['careers',     $this->Career_model->get_published(), 'weekly', '0.6'],
+            ['downloads',   $this->Download_model->get_published(), 'monthly', '0.6'],
+            ['team',        $this->Team_model->get_published(), 'monthly', '0.7'],
+            ['client',      $this->Client_model->get_published(), 'monthly', '0.6'],
+            ['testimonial', $this->Testimonial_model->get_published(), 'monthly', '0.6'],
         ];
 
-        // Pages
-        $pages = $this->Page_model->get_published();
-        if (!empty($pages)) {
-            foreach ($pages as $page) {
-                $sitemap_urls[] = [
-                    'url' => base_url('page/' . $page['slug']),
-                    'lastmod' => !empty($page['updated_at']) ? date('Y-m-d', strtotime($page['updated_at'])) : date('Y-m-d'),
-                    'changefreq' => 'monthly',
-                    'priority' => '0.8'
-                ];
+        foreach ($listings as $listing) {
+            list($path, $items, $freq, $priority) = $listing;
+
+            // Listing kosong tidak dimasukkan agar tidak ada halaman tanpa konten
+            if (empty($items)) {
+                continue;
+            }
+
+            $urls[] = $this->entry(base_url($path), $this->latest($items), $freq, $priority);
+        }
+
+        // Halaman detail yang memiliki slug dan route detail
+        $details = [
+            ['page',    $this->Page_model->get_published(),    'monthly', '0.8'],
+            ['service', $this->Service_model->get_published(), 'monthly', '0.8'],
+            ['product', $this->Product_model->get_published(), 'monthly', '0.8'],
+            ['news',    $this->News_model->get_published(),    'weekly',  '0.7'],
+        ];
+
+        foreach ($details as $detail) {
+            list($path, $items, $freq, $priority) = $detail;
+
+            foreach ((array) $items as $item) {
+                if (empty($item['slug'])) {
+                    continue;
+                }
+
+                $urls[] = $this->entry(
+                    base_url($path . '/' . rawurlencode($item['slug'])),
+                    $this->item_date($item),
+                    $freq,
+                    $priority
+                );
             }
         }
 
-        // Services
-        $services = $this->Service_model->get_published();
-        if (!empty($services)) {
-            foreach ($services as $service) {
-                $sitemap_urls[] = [
-                    'url' => base_url('service/' . $service['slug']),
-                    'lastmod' => !empty($service['updated_at']) ? date('Y-m-d', strtotime($service['updated_at'])) : date('Y-m-d'),
-                    'changefreq' => 'monthly',
-                    'priority' => '0.8'
-                ];
-            }
-        }
-
-        // Products
-        $products = $this->Product_model->get_published();
-        if (!empty($products)) {
-            foreach ($products as $product) {
-                $sitemap_urls[] = [
-                    'url' => base_url('product/' . $product['slug']),
-                    'lastmod' => !empty($product['updated_at']) ? date('Y-m-d', strtotime($product['updated_at'])) : date('Y-m-d'),
-                    'changefreq' => 'monthly',
-                    'priority' => '0.8'
-                ];
-            }
-        }
-
-        // Portfolios
-        $portfolios = $this->Portfolio_model->get_published();
-        if (!empty($portfolios)) {
-            foreach ($portfolios as $portfolio) {
-                $sitemap_urls[] = [
-                    'url' => base_url('portfolio/' . $portfolio['slug']),
-                    'lastmod' => !empty($portfolio['updated_at']) ? date('Y-m-d', strtotime($portfolio['updated_at'])) : date('Y-m-d'),
-                    'changefreq' => 'monthly',
-                    'priority' => '0.7'
-                ];
-            }
-        }
-
-        // News
-        $news_list = $this->News_model->get_published();
-        if (!empty($news_list)) {
-            foreach ($news_list as $news) {
-                $sitemap_urls[] = [
-                    'url' => base_url('news/' . $news['slug']),
-                    'lastmod' => !empty($news['updated_at']) ? date('Y-m-d', strtotime($news['updated_at'])) : date('Y-m-d'),
-                    'changefreq' => 'weekly',
-                    'priority' => '0.7'
-                ];
-            }
-        }
-
-        // Team
-        $sitemap_urls[] = [
-            'url' => base_url('team'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'monthly',
-            'priority' => '0.7'
-        ];
-
-        // Testimonials
-        $sitemap_urls[] = [
-            'url' => base_url('testimonial'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'monthly',
-            'priority' => '0.6'
-        ];
-
-        // Portfolio listing
-        $sitemap_urls[] = [
-            'url' => base_url('portfolio'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'weekly',
-            'priority' => '0.8'
-        ];
-
-        // Services listing
-        $sitemap_urls[] = [
-            'url' => base_url('service'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'weekly',
-            'priority' => '0.8'
-        ];
-
-        // Products listing
-        $sitemap_urls[] = [
-            'url' => base_url('product'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'weekly',
-            'priority' => '0.8'
-        ];
-
-        // News listing
-        $sitemap_urls[] = [
-            'url' => base_url('news'),
-            'lastmod' => date('Y-m-d'),
-            'changefreq' => 'weekly',
-            'priority' => '0.8'
-        ];
-
-        // Generate XML
         echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
-        foreach ($sitemap_urls as $url) {
+        foreach ($urls as $url) {
             echo '  <url>' . "\n";
             echo '    <loc>' . htmlspecialchars($url['url'], ENT_XML1) . '</loc>' . "\n";
             echo '    <lastmod>' . $url['lastmod'] . '</lastmod>' . "\n";
@@ -161,6 +92,40 @@ class Sitemap extends CI_Controller
         }
 
         echo '</urlset>' . "\n";
+    }
+
+    private function entry($url, $lastmod, $changefreq, $priority)
+    {
+        return [
+            'url' => $url,
+            'lastmod' => $lastmod,
+            'changefreq' => $changefreq,
+            'priority' => $priority,
+        ];
+    }
+
+    private function item_date($item)
+    {
+        foreach (['updated_at', 'published_at', 'created_at'] as $field) {
+            if (!empty($item[$field]) && strtotime($item[$field])) {
+                return date('Y-m-d', strtotime($item[$field]));
+            }
+        }
+
+        return date('Y-m-d');
+    }
+
+    // Tanggal terbaru dari sekumpulan item, untuk lastmod halaman listing
+    private function latest($items)
+    {
+        $latest = 0;
+
+        foreach ($items as $item) {
+            $time = strtotime($this->item_date($item));
+            $latest = max($latest, $time);
+        }
+
+        return $latest ? date('Y-m-d', $latest) : date('Y-m-d');
     }
 
     /**
