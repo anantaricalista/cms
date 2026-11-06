@@ -12,15 +12,12 @@ $this->load->model('Product_model');
 
 $services = $this->Service_model->get_published();
 $products = $this->Product_model->get_published();
+$company_name = !empty($site['company_name']) ? $site['company_name'] : 'Kami';
+$contact_phone = isset($site['phone']) ? $site['phone'] : '';
+$whatsapp_form_url = preg_replace('/\D/', '', $contact_phone) !== ''
+    ? whatsapp_contact_url($contact_phone)
+    : '';
 ?>
-
-<!-- Set Site Settings untuk JavaScript -->
-<script>
-    window.siteSettings = {
-        company_name: '<?= isset($site['company_name']) ? addslashes($site['company_name']) : 'Kami'; ?>',
-        phone: '<?= isset($site['phone']) ? addslashes($site['phone']) : ''; ?>'
-    };
-</script>
 
 <section id="contact" class="section-padding position-relative overflow-hidden">
 
@@ -176,7 +173,9 @@ $products = $this->Product_model->get_published();
 
                     <h5 class="mb-4 fw-bold">Kirim Pesan Anda</h5>
 
-                    <form method="post" action="<?= base_url('contact/submit'); ?>" id="contactForm">
+                    <form method="post" action="<?= html_escape(base_url('contact/submit')); ?>" id="contactForm"
+                          data-company-name="<?= html_escape($company_name); ?>"
+                          data-whatsapp-url="<?= html_escape($whatsapp_form_url); ?>">
 
                         <!-- Name & Email Row -->
                         <div class="row g-3 mb-3">
@@ -369,24 +368,16 @@ $products = $this->Product_model->get_published();
                 <p class="text-secondary mb-4">
                     Terima kasih telah menghubungi kami. Kami akan menghubungi Anda melalui kontak yang Anda berikan.
                 </p>
-                <p class="text-secondary mb-4">
-                    Kami akan mengalihkan Anda ke WhatsApp untuk proses konsultasi yang lebih cepat.
-                </p>
-                
                 <div class="bg-light rounded-3 p-4 text-start mb-4" id="modalDetails">
                     <!-- Details akan diisi oleh JavaScript -->
                 </div>
 
                 <div class="d-flex flex-column gap-3">
-                    <div>
-                        <p class="text-secondary small mb-2">
-                            Redirecting ke WhatsApp dalam <span id="countdown">5</span> detik...
-                        </p>
-                        <button type="button" class="btn btn-success w-100 rounded-2 fw-semibold" id="whatsappBtn">
-                            <i class="fa-brands fa-whatsapp me-2"></i>Buka WhatsApp Sekarang
-                        </button>
-                    </div>
-                    <p class="text-secondary small mb-0">atau klik tombol di atas untuk memulai konsultasi</p>
+                    <p class="text-secondary small mb-0" id="whatsappStatus" role="status"></p>
+                    <a class="btn btn-success w-100 rounded-2 fw-semibold" id="whatsappBtn"
+                       target="_blank" rel="noopener noreferrer" hidden>
+                        <i class="fa-brands fa-whatsapp me-2"></i>Buka WhatsApp
+                    </a>
                 </div>
             </div>
             <div class="modal-footer border-0">
@@ -434,222 +425,4 @@ $products = $this->Product_model->get_published();
     }
 </style>
 
-<script>
-    /**
-     * Contact Form Submission Handler
-     * Handles form validation, submission, modal display, and WhatsApp redirect
-     */
-    (function() {
-        'use strict';
-
-        const ContactForm = {
-            form: null,
-            submitBtn: null,
-            resetBtn: null,
-            whatsappBtn: null,
-            whatsappDelay: 5000, // 5 seconds
-            companyName: '', // Will be set from window.siteSettings
-            phoneNumber: '', // Will be set from window.siteSettings
-            currentData: null, // Store current submission data
-            redirectTimeout: null, // Store timeout reference
-
-            init: function() {
-                this.form = document.getElementById('contactForm');
-                if (!this.form) return;
-
-                this.submitBtn = this.form.querySelector('button[type="submit"]');
-                this.resetBtn = this.form.querySelector('button[type="reset"]');
-                this.whatsappBtn = document.getElementById('whatsappBtn');
-                this.companyName = window.siteSettings?.company_name || 'Kami';
-                this.phoneNumber = window.siteSettings?.phone || '';
-
-                this.attachEventListeners();
-            },
-
-            attachEventListeners: function() {
-                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-                if (this.whatsappBtn) {
-                    this.whatsappBtn.addEventListener('click', (e) => this.handleWhatsappClick(e));
-                }
-            },
-
-            handleSubmit: function(e) {
-                e.preventDefault();
-
-                // Disable submit button
-                this.submitBtn.disabled = true;
-                this.submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Mengirim...';
-
-                // Get form data
-                const formData = new FormData(this.form);
-
-                // Submit via AJAX
-                fetch(this.form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json())
-                .then(result => {
-                    this.submitBtn.disabled = false;
-                    this.submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Kirim Pesan';
-
-                    if (result.success) {
-                        this.handleSuccess(result.data);
-                    } else {
-                        this.handleError(result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    this.submitBtn.disabled = false;
-                    this.submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Kirim Pesan';
-                    this.handleError('Terjadi kesalahan pada server');
-                });
-            },
-
-            handleSuccess: function(data) {
-                // Store current data for WhatsApp redirect
-                this.currentData = data;
-
-                // Show success modal
-                this.showSuccessModal(data);
-
-                // Reset form
-                this.form.reset();
-
-                // Redirect to WhatsApp after delay
-                this.redirectTimeout = setTimeout(() => {
-                    this.redirectToWhatsApp(data);
-                }, this.whatsappDelay);
-            },
-
-            handleError: function(message) {
-                // Show error modal or alert
-                alert('Error: ' + message);
-            },
-
-            showSuccessModal: function(data) {
-                // Build details HTML
-                const detailsHtml = `
-                    <h6 class="fw-bold mb-3">Detail Pesan Anda:</h6>
-                    <div class="mb-2">
-                        <span class="text-secondary small">Nama:</span>
-                        <p class="mb-0 fw-semibold">${this.escapeHtml(data.name)}</p>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-secondary small">Email:</span>
-                        <p class="mb-0 fw-semibold">${this.escapeHtml(data.email)}</p>
-                    </div>
-                    ${data.phone ? `
-                        <div class="mb-2">
-                            <span class="text-secondary small">Telepon:</span>
-                            <p class="mb-0 fw-semibold">${this.escapeHtml(data.phone)}</p>
-                        </div>
-                    ` : ''}
-                    <div class="mb-2">
-                        <span class="text-secondary small">Perihal:</span>
-                        <p class="mb-0 fw-semibold">${this.escapeHtml(data.subject)}</p>
-                    </div>
-                    <div>
-                        <span class="text-secondary small">Pesan:</span>
-                        <p class="mb-0 fw-semibold" style="word-break: break-word;">${this.escapeHtml(data.message).replace(/\n/g, '<br>')}</p>
-                    </div>
-                `;
-
-                // Insert details into modal
-                const detailsElement = document.getElementById('modalDetails');
-                if (detailsElement) {
-                    detailsElement.innerHTML = detailsHtml;
-                }
-
-                // Show modal
-                const modal = new bootstrap.Modal(document.getElementById('successContactModal'));
-                modal.show();
-
-                // Countdown timer
-                this.startCountdown();
-            },
-
-            startCountdown: function() {
-                let count = 5;
-                const countdownElement = document.getElementById('countdown');
-
-                if (countdownElement) {
-                    const interval = setInterval(() => {
-                        count--;
-                        countdownElement.textContent = count;
-                        if (count <= 0) {
-                            clearInterval(interval);
-                        }
-                    }, 1000);
-                }
-            },
-
-            handleWhatsappClick: function(e) {
-                e.preventDefault();
-
-                // Clear the redirect timeout if user clicks button manually
-                if (this.redirectTimeout) {
-                    clearTimeout(this.redirectTimeout);
-                }
-
-                // Redirect immediately
-                if (this.currentData) {
-                    this.redirectToWhatsApp(this.currentData);
-                }
-            },
-
-            redirectToWhatsApp: function(data) {
-                // Build WhatsApp message
-                const message = `Halo ${this.companyName}, saya ${data.name}\nEmail: ${data.email}\nTelepon: ${data.phone || '-'}\nPerihal: ${data.subject}\nPesan: ${data.message}`;
-
-                if (!this.phoneNumber) {
-                    console.error('WhatsApp number not configured');
-                    alert('Nomor WhatsApp tidak dikonfigurasi');
-                    return;
-                }
-
-                // Format phone number (remove non-digits, add country code if needed)
-                let formattedPhone = this.phoneNumber.replace(/\D/g, '');
-                if (!formattedPhone.startsWith('62')) {
-                    if (formattedPhone.startsWith('0')) {
-                        formattedPhone = '62' + formattedPhone.substring(1);
-                    } else {
-                        formattedPhone = '62' + formattedPhone;
-                    }
-                }
-
-                // Create WhatsApp URL
-                const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodedMessage}`;
-
-                // Open in new tab
-                window.open(whatsappUrl, '_blank');
-            },
-
-            escapeHtml: function(text) {
-                const map = {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#039;'
-                };
-                return text.replace(/[&<>"']/g, m => map[m]);
-            }
-        };
-
-        // Initialize on DOM ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => ContactForm.init());
-        } else {
-            ContactForm.init();
-        }
-
-        // Expose to window for debugging
-        window.ContactForm = ContactForm;
-    })();
-</script>
+<script src="<?= html_escape(base_url('assets/frontend/js/contact.js')); ?>" defer></script>
