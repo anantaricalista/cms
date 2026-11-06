@@ -55,6 +55,10 @@
                             class="nav-icon bi bi-file-earmark-text"></i>
                         <p>Pages</p>
                     </a></li>
+                <li class="nav-item"><a href="<?= site_url('admin/contact_messages'); ?>" class="nav-link"><i
+                            class="nav-icon bi bi-envelope"></i>
+                        <p>Pesan Kontak</p>
+                    </a></li>
                 <li class="nav-item"><a href="<?= site_url('admin/services'); ?>" class="nav-link"><i
                             class="nav-icon fas fa-concierge-bell"></i>
                         <p>Services</p>
