@@ -36,7 +36,7 @@ class Sitemap extends CI_Controller
             ['product',     $this->Product_model->get_published(), 'weekly',  '0.8'],
             ['portfolio',   $this->Portfolio_model->get_published(), 'weekly', '0.8'],
             ['news',        $this->News_model->get_published(), 'weekly',  '0.8'],
-            ['careers',     $this->Career_model->get_published(), 'weekly', '0.6'],
+            ['careers',     $this->Career_model->get_all(), 'weekly', '0.6'],
             ['downloads',   $this->Download_model->get_published(), 'monthly', '0.6'],
             ['team',        $this->Team_model->get_published(), 'monthly', '0.7'],
             ['client',      $this->Client_model->get_published(), 'monthly', '0.6'],
