@@ -247,7 +247,10 @@
 
         </p>
 
-        <a href="<?= base_url('contact'); ?>" class="bgrd flex-fill btn py-2">
+        <a href="<?= html_escape(whatsapp_contact_url(
+            $site['phone'] ?? '',
+            'Halo ' . ($site['company_name'] ?? 'Kami') . ', saya ingin berdiskusi tentang kebutuhan bisnis dan teknologi.'
+        )); ?>" target="_blank" rel="noopener noreferrer" class="bgrd flex-fill btn py-2">
 
             Hubungi Kami
 

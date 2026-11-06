@@ -2,6 +2,10 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 $site_name = !empty($site['site_name']) ? $site['site_name'] : 'Company';
+$whatsapp_url = whatsapp_contact_url(
+    $site['phone'] ?? '',
+    'Halo ' . $site_name . ', saya ingin berkonsultasi.'
+);
 
 $logo = '';
 
@@ -139,7 +143,7 @@ if (!function_exists('renderMobileMenu')) {
                         <i class="fa-solid fa-moon" id="mooni" style="display:none"></i>
                     </button>
 
-                    <a href="#contact" class="bgrd btn px-3 py-2 d-none d-sm-flex align-items-center gap-2">
+                    <a href="<?= html_escape($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer" class="bgrd btn px-3 py-2 d-none d-sm-flex align-items-center gap-2">
                         Contact Us
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
@@ -159,7 +163,7 @@ if (!function_exists('renderMobileMenu')) {
         <?php renderMobileMenu($menus); ?>
 
         <div class="d-flex gap-2 mt-3">
-            <a href="#contact" class="bgrd flex-fill btn py-2">Hubungi Kami</a>
+            <a href="<?= html_escape($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer" class="bgrd flex-fill btn py-2">Hubungi Kami</a>
         </div>
 
     </div>

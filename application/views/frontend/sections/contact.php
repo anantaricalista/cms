@@ -123,16 +123,10 @@ $products = $this->Product_model->get_published();
                                     <p class="small text-secondary mb-1">Telepon</p>
                                     <?php 
                                         $phone = $site['phone'];
-                                        $phone_clean = preg_replace('/\D/', '', $phone);
-                                        if (!preg_match('/^62/', $phone_clean)) {
-                                            if (preg_match('/^0/', $phone_clean)) {
-                                                $phone_clean = '62' . substr($phone_clean, 1);
-                                            } else {
-                                                $phone_clean = '62' . $phone_clean;
-                                            }
-                                        }
-                                        $message = urlencode("Halo " . $site['company_name'] . ", saya ingin berkonsultasi dengan Anda");
-                                        $whatsapp_url = "https://wa.me/{$phone_clean}?text={$message}";
+                                        $whatsapp_url = whatsapp_contact_url(
+                                            $phone,
+                                            'Halo ' . $site['company_name'] . ', saya ingin berkonsultasi dengan Anda.'
+                                        );
                                     ?>
                                     <a href="<?php echo $whatsapp_url; ?>" class="fw-semibold text-decoration-none" style="color:var(--tx);" target="_blank" rel="noopener noreferrer">
                                         <i class="fa-brands fa-whatsapp me-2"></i><?php echo html_escape($phone); ?>
@@ -630,7 +624,7 @@ $products = $this->Product_model->get_published();
 
                 // Create WhatsApp URL
                 const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+                const whatsappUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodedMessage}`;
 
                 // Open in new tab
                 window.open(whatsappUrl, '_blank');
