@@ -6,6 +6,12 @@
 
         <div class="card-body">
 
+            <?php if (validation_errors()): ?>
+                <div class="alert alert-danger">
+                    <?= validation_errors(); ?>
+                </div>
+            <?php endif; ?>
+
             <h4>Website Information</h4>
 
             <input class="form-control" name="site_name" value="<?= html_escape($site->site_name); ?>">
@@ -29,6 +35,39 @@
 
             <textarea class="form-control mt-3"
                 name="google_maps_embed"><?= html_escape($site->google_maps_embed); ?></textarea>
+
+            <hr>
+
+            <h4>Social Media Links</h4>
+            <p class="text-muted">Masukkan URL akun sosial media. Kosongkan jika tidak digunakan.</p>
+
+            <div class="row">
+                <?php
+                $social_links = [
+                    'whatsapp_url' => 'WhatsApp',
+                    'tiktok_url' => 'TikTok',
+                    'facebook_url' => 'Facebook',
+                    'instagram_url' => 'Instagram',
+                    'youtube_url' => 'YouTube',
+                    'x_url' => 'X (Twitter)',
+                    'threads_url' => 'Threads',
+                    'linkedin_url' => 'LinkedIn',
+                    'telegram_url' => 'Telegram'
+                ];
+                ?>
+                <?php foreach ($social_links as $field => $label): ?>
+                    <div class="col-md-6 mb-3">
+                        <label for="<?= html_escape($field); ?>"><?= html_escape($label); ?> URL</label>
+                        <input
+                            type="url"
+                            class="form-control"
+                            id="<?= html_escape($field); ?>"
+                            name="<?= html_escape($field); ?>"
+                            value="<?= html_escape(set_value($field, $site->$field ?? '')); ?>"
+                            placeholder="https://">
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
             <hr>
 

@@ -34,6 +34,21 @@ class Site extends MY_Controller
         $this->form_validation->set_rules('company_name', 'Company Name', 'trim|required|max_length[150]');
         $this->form_validation->set_rules('email', 'Email', 'trim|valid_email');
         $this->form_validation->set_rules('phone', 'Phone', 'trim');
+        $social_links = [
+            'whatsapp_url' => 'WhatsApp URL',
+            'tiktok_url' => 'TikTok URL',
+            'facebook_url' => 'Facebook URL',
+            'instagram_url' => 'Instagram URL',
+            'youtube_url' => 'YouTube URL',
+            'x_url' => 'X URL',
+            'threads_url' => 'Threads URL',
+            'linkedin_url' => 'LinkedIn URL',
+            'telegram_url' => 'Telegram URL'
+        ];
+
+        foreach ($social_links as $field => $label) {
+            $this->form_validation->set_rules($field, $label, 'trim|valid_url');
+        }
 
         if ($this->form_validation->run() === FALSE) {
             return $this->index();
@@ -51,6 +66,15 @@ class Site extends MY_Controller
                 'company_summary' => $this->input->post('company_summary', TRUE),
                 'email' => $this->input->post('email', TRUE),
                 'phone' => $this->input->post('phone', TRUE),
+                'whatsapp_url' => $this->input->post('whatsapp_url', TRUE),
+                'tiktok_url' => $this->input->post('tiktok_url', TRUE),
+                'facebook_url' => $this->input->post('facebook_url', TRUE),
+                'instagram_url' => $this->input->post('instagram_url', TRUE),
+                'youtube_url' => $this->input->post('youtube_url', TRUE),
+                'x_url' => $this->input->post('x_url', TRUE),
+                'threads_url' => $this->input->post('threads_url', TRUE),
+                'linkedin_url' => $this->input->post('linkedin_url', TRUE),
+                'telegram_url' => $this->input->post('telegram_url', TRUE),
                 'address' => $this->input->post('address', TRUE),
                 'google_maps_embed' => $this->input->post('google_maps_embed'),
                 'primary_color' => $this->input->post('primary_color', TRUE),
