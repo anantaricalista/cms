@@ -29,7 +29,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 </main>
 
-<?php $this->load->view('frontend/layouts/footer'); ?>
+<?php
+$this->load->model('Page_model');
+$this->load->model('Service_model');
+$this->load->view('frontend/layouts/footer', [
+    'footer_pages' => $this->Page_model->get_published(),
+    'footer_services' => $this->Service_model->get_published()
+]);
+?>
 
 <?php $this->load->view('frontend/layouts/scripts'); ?>
 
