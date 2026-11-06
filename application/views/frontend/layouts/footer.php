@@ -6,6 +6,10 @@ $company_name = !empty($site['company_name']) ? $site['company_name'] : $site_na
 $summary = !empty($site['company_summary']) ? $site['company_summary'] : '';
 $email = !empty($site['email']) ? $site['email'] : '';
 $phone = !empty($site['phone']) ? $site['phone'] : '';
+$whatsapp_url = whatsapp_contact_url(
+    $phone,
+    'Halo ' . $company_name . ', saya ingin menghubungi Anda.'
+);
 $address = !empty($site['address']) ? $site['address'] : '';
 ?>
 
@@ -92,7 +96,7 @@ $address = !empty($site['address']) ? $site['address'] : '';
 
                 <a href="#news">News</a>
 
-                <a href="#contact">Contact</a>
+                <a href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer">Contact</a>
 
             </div>
 
@@ -122,7 +126,7 @@ $address = !empty($site['address']) ? $site['address'] : '';
 
                 <a href="#downloads">Downloads</a>
 
-                <a href="#contact">Support</a>
+                <a href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer">Support</a>
 
             </div>
 

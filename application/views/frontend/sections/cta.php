@@ -75,10 +75,15 @@
                 <?php if (!empty($site['phone'])) : ?>
 
                     <a
-                        href="tel:<?php echo html_escape($site['phone']); ?>"
+                        href="<?php echo html_escape(whatsapp_contact_url(
+                            $site['phone'],
+                            'Halo ' . $site['company_name'] . ', saya ingin berkonsultasi.'
+                        )); ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="bgrd btn btn-lg px-4">
 
-                        <i class="fa-solid fa-phone me-2"></i>
+                        <i class="fa-brands fa-whatsapp me-2"></i>
 
                         Hubungi Kami
 

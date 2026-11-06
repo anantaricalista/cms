@@ -54,6 +54,7 @@ $autoload['helper'] = array(
     'url',
     'file',
     'media_helper',
+    'whatsapp_helper',
     'text'
 );
 
