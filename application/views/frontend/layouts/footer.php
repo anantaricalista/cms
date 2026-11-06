@@ -101,13 +101,11 @@ $social_links = [
 
                 <h5>Company</h5>
 
-                <a href="#about">About</a>
-
-                <a href="#team">Team</a>
-
-                <a href="#news">News</a>
-
-                <a href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer">Contact</a>
+                <?php foreach ($footer_pages as $footer_page): ?>
+                    <a href="<?= html_escape(site_url('page/' . $footer_page['slug'])); ?>">
+                        <?= html_escape($footer_page['title']); ?>
+                    </a>
+                <?php endforeach; ?>
 
             </div>
 
@@ -117,13 +115,11 @@ $social_links = [
 
                 <h5>Services</h5>
 
-                <a href="#services">Our Services</a>
-
-                <a href="#products">Products</a>
-
-                <a href="#portfolio">Portfolio</a>
-
-                <a href="#gallery">Gallery</a>
+                <?php foreach ($footer_services as $footer_service): ?>
+                    <a href="<?= html_escape(site_url('service/' . $footer_service['slug'])); ?>">
+                        <?= html_escape($footer_service['name']); ?>
+                    </a>
+                <?php endforeach; ?>
 
             </div>
 
@@ -133,9 +129,9 @@ $social_links = [
 
                 <h5>Information</h5>
 
-                <a href="#careers">Career</a>
+                <a href="<?= site_url('careers'); ?>">Career</a>
 
-                <a href="#downloads">Downloads</a>
+                <a href="<?= site_url('downloads'); ?>">Downloads</a>
 
                 <a href="<?php echo html_escape($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer">Support</a>
 
