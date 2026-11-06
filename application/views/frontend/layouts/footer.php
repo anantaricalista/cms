@@ -11,6 +11,17 @@ $whatsapp_url = whatsapp_contact_url(
     'Halo ' . $company_name . ', saya ingin menghubungi Anda.'
 );
 $address = !empty($site['address']) ? $site['address'] : '';
+$social_links = [
+    'whatsapp_url' => ['label' => 'WhatsApp', 'icon' => 'fa-brands fa-whatsapp'],
+    'tiktok_url' => ['label' => 'TikTok', 'icon' => 'fa-brands fa-tiktok'],
+    'facebook_url' => ['label' => 'Facebook', 'icon' => 'fa-brands fa-facebook-f'],
+    'instagram_url' => ['label' => 'Instagram', 'icon' => 'fa-brands fa-instagram'],
+    'youtube_url' => ['label' => 'YouTube', 'icon' => 'fa-brands fa-youtube'],
+    'x_url' => ['label' => 'X', 'icon' => 'fa-brands fa-twitter'],
+    'threads_url' => ['label' => 'Threads', 'icon' => 'fa-solid fa-at'],
+    'linkedin_url' => ['label' => 'LinkedIn', 'icon' => 'fa-brands fa-linkedin-in'],
+    'telegram_url' => ['label' => 'Telegram', 'icon' => 'fa-brands fa-telegram']
+];
 ?>
 
 <footer id="foot">
@@ -147,35 +158,19 @@ $address = !empty($site['address']) ? $site['address'] : '';
             </p>
 
             <div class="d-flex gap-2">
-
-                <a href="#"
-                   class="sico">
-
-                    <i class="fa-brands fa-facebook-f"></i>
-
-                </a>
-
-                <a href="#"
-                   class="sico">
-
-                    <i class="fa-brands fa-instagram"></i>
-
-                </a>
-
-                <a href="#"
-                   class="sico">
-
-                    <i class="fa-brands fa-linkedin-in"></i>
-
-                </a>
-
-                <a href="#"
-                   class="sico">
-
-                    <i class="fa-brands fa-youtube"></i>
-
-                </a>
-
+                <?php foreach ($social_links as $field => $social): ?>
+                    <?php if (!empty($site[$field])): ?>
+                        <a
+                            href="<?= html_escape($site[$field]); ?>"
+                            class="sico"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="<?= html_escape($social['label']); ?>"
+                            title="<?= html_escape($social['label']); ?>">
+                            <i class="<?= html_escape($social['icon']); ?>" aria-hidden="true"></i>
+                        </a>
+                    <?php endif; ?>
+                <?php endforeach; ?>
             </div>
 
         </div>
